@@ -1,4 +1,4 @@
-# Duck Hunt Reaction Arcade
+# Color Quackdown
 
 An interactive arcade reaction game built for OpenSauce 2026 based on the prompt "Make something interactive." Duck Hunt Reaction Arcade is a modern take on the classic carnival duck shooting game. Instead of shooting ducks, players test their reflexes, accuracy, and color recognition by hitting the correct button before time runs out. The goal was to create a project that could be understood instantly by spectators, encourage repeated play, and combine mechanical design, electronics, and embedded programming into one interactive experience.
 
