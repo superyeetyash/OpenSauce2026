@@ -1,174 +1,77 @@
-# Duck Hunt Reaction Arcade — OpenSauce 2026
+# Duck Hunt Reaction Arcade
 
-An interactive arcade-style reaction game built for the OpenSauce 2026 hardware hackathon
-(prompt: **make something interactive**). Players test speed, accuracy, and reflexes by
-hitting the correct illuminated button before time runs out.
+An interactive arcade reaction game built for OpenSauce 2026 based on the prompt "Make something interactive." Duck Hunt Reaction Arcade is a modern take on the classic carnival duck shooting game. Instead of shooting ducks, players test their reflexes, accuracy, and color recognition by hitting the correct button before time runs out. The goal was to create a project that could be understood instantly by spectators, encourage repeated play, and combine mechanical design, electronics, and embedded programming into one interactive experience.
 
-A modern, customizable take on the carnival duck-shooting game — shooting replaced by
-fast-paced color recognition. Designed to be visually impressive, instantly understandable
-to spectators, and playable by a crowd.
+## Gameplay
 
-## How it plays
+The game uses six mechanical ducks arranged in two rows of three. Each duck is mounted on a servo-powered rack-and-pinion lift that allows it to rise from behind a wall. Every duck has a fixed color. In front of the player are six arcade buttons arranged in the same 2×3 layout, each containing an RGB LED. At the beginning of every round, the button colors are randomized. When a duck rises, the player must identify its color and press the matching illuminated button before the timer reaches zero. If the correct button is pressed, the duck lowers, a success sound plays, the score increases, and the next round begins with less time available. If the wrong button is pressed or time expires, the game ends. The timer progressively decreases after each successful round with a minimum limit of 1.5 seconds.
 
-- Six mechanical **ducks** (two rows of three) hide behind a wall, each on a servo-driven
-  rack-and-pinion lift. Each duck has a fixed color.
-- Six **arcade buttons** in the same 2×3 layout each contain an RGB LED. Every round the
-  button colors **shuffle**.
-- A duck pops up → find the button showing the duck's color → press it before the timer
-  runs out.
-  - **Correct** → duck drops, *ding*, +1 point, next round with **half the time**
-    (floors at 1.5 s).
-  - **Wrong** → error sound, game over.
-  - **Time up** → time-up sound, game over.
-- A **HUB75 64×32 LED matrix** is the arcade marquee: title, score, countdown, round
-  info, animations.
+## Features
 
-### Main features
+The project includes six servo-powered rising duck targets, RGB LED arcade buttons, color recognition gameplay, increasing difficulty, score tracking, high score storage, arcade-style sound effects, a HUB75 RGB LED matrix display, and fully physical controls designed for public interaction at events.
 
-- 🎯 Reaction-based gameplay
-- 🦆 Six servo-powered rising duck targets
-- 🌈 RGB button color-matching system
-- ⏱️ Progressively faster rounds (time halves each round)
-- 🏆 Score tracking and high scores
-- 🖥️ Large LED matrix arcade display
-- 🔊 Arcade-style sound effects
-- 🎮 Physical interactive controls
+## System Architecture
 
-## System architecture
+The Arduino Mega 2560 is the main controller and handles all real-time game functions, including button inputs, RGB LED control, servo movement, game timing, sound effects, and score management. A Raspberry Pi Pico 2 is used as a dedicated display controller for the HUB75 LED matrix. Since HUB75 panels require constant high-speed refreshing, separating the display system from the gameplay controller keeps the game responsive. The Mega communicates with the Pico 2 over UART, sending information such as score, timer values, and game state.
 
-```
-                 P5 HUB75 LED Matrix
-                         |
-                  Raspberry Pi Pico 2
-                         |
-                       UART
-                         |
-                  Arduino Mega 2560
-                  /       |        \
-                 /        |         \
-            Servos     Buttons    RGB LEDs
-              |           |          |
-           Ducks     Player Input  Colors
-```
+## Bill of Materials (BOM)
 
-The Mega 2560 owns all game logic, inputs, lights, servos, and sound. The Pico 2 is a
-dedicated display driver for the HUB75 panel (HUB75 needs constant high-speed refresh —
-too much for the Mega on top of everything else) and receives score/timer/state over UART.
+| Quantity | Component | Purpose |
+|---|---|---|
+| 1 | Arduino Mega 2560 | Main game controller handling inputs, outputs, and game logic |
+| 1 | Raspberry Pi Pico 2 | Dedicated HUB75 LED matrix display controller |
+| 1 | P5 HUB75 64×32 RGB LED Matrix | Main arcade display for score, timer, and animations |
+| 6 | MG90S metal gear micro servos | Drives the duck rack-and-pinion lifting mechanisms |
+| 6 | 4-pin arcade buttons | Player input controls |
+| 6 | Common cathode RGB LEDs | Button lighting system |
+| 18 | 220Ω resistors | Current limiting for RGB LED channels |
+| 1 | Passive speaker or buzzer | Arcade sound effects |
+| 1 | 5V 10A power supply | Powers servos, LED matrix, and electronics |
+| 1 | Power distribution block | Splits 5V power between system components |
+| 1 | 470–1000µF electrolytic capacitor | Reduces servo voltage spikes |
+| 1 | Servo wiring harness or jumper wires | Connects servo power and signals |
+| 1 | Assorted jumper wires | General electrical connections |
+| 1 | Breadboard or custom PCB | Prototyping and connecting electronics |
+| 1 | 3D printed duck assemblies | Physical duck targets |
+| 6 | Rack-and-pinion lift assemblies | Converts servo rotation into vertical duck movement |
+| 1 | Laser-cut or fabricated enclosure | Houses the arcade system |
 
-## Repo layout
+## Pin Configuration
 
-| Path | What it is |
+The RGB LEDs use a common cathode configuration, with the common pin connected to ground and each RGB channel connected to the Arduino Mega through a 220Ω resistor. The arcade buttons use one signal connection and one ground connection with `INPUT_PULLUP`, meaning a pressed button reads as LOW. The current pin assignments are: pins 2–13 for RGB channels, pins 22–27 for additional RGB channels, pins 28–33 for buttons, and pin 34 for the speaker. The complete pin configuration is stored at the top of `ColorMatchGame/ColorMatchGame.ino`.
+
+## Power System
+
+The servos and HUB75 display should not be powered directly from the Arduino Mega's 5V pin. A dedicated 5V power supply is used to power the system through a distribution block, with separate rails for the servo system and LED matrix. The Arduino Mega, Raspberry Pi Pico 2, servo power, and display power all share a common ground. A 470–1000µF capacitor is placed near the servo power rail to reduce voltage drops caused by servo startup current spikes.
+
+Estimated power requirements:
+
+| Component | Estimated Current |
 |---|---|
-| `ColorMatchGame/ColorMatchGame.ino` | Current Mega sketch: buttons + RGB lights + round timer + speaker (the color-match core of the game, playable today via Serial Monitor) |
-| `cad/` | Parametric OpenSCAD models: ducks, rack & pinion, servo lift modules, laser-cut housing panels — see `cad/README.md` |
-| `CLAUDE.md` | Working notes/conventions for AI-assisted development |
+| Arduino Mega 2560 | ~200mA |
+| Six MG90S servos | Up to 2A+ during movement |
+| HUB75 LED matrix | 2–3A depending on brightness |
+| RGB LEDs and logic | ~300mA |
 
-## Bill of materials
+## Repository Structure
 
-| Qty | Part | Notes |
-|---|---|---|
-| 1 | Elegoo/Arduino **Mega 2560** | Main controller |
-| 6 | 4-pin tactile buttons | One leg to signal pin, other to GND |
-| 6 | 4-pin RGB LEDs, **common cathode** | Common (longest) pin to GND |
-| 18 | ~220 Ω resistors | One per LED color channel (R, G, B × 6) |
-| 6 | **SG90 / MG90S** micro servos | MG90S (metal gear) recommended — see `cad/README.md` |
-| 1 | Passive speaker or passive buzzer | On pin 34 (~100 Ω series resistor for a bare speaker) |
-| 1 | Raspberry Pi **Pico 2** | HUB75 display driver (future phase) |
-| 1 | **P5 HUB75 64×32** RGB matrix | Arcade display (future phase) |
-| 1 | 5 V power supply | See “Power” below |
+The repository contains the main Arduino firmware in `ColorMatchGame/ColorMatchGame.ino` and the mechanical CAD files in the `cad/` folder. The firmware contains the complete game logic, button handling, RGB control, servo control, timing system, sound effects, and EEPROM high score storage. The CAD files include the duck models, rack-and-pinion lift system, servo mounts, and housing components. The mechanical design is created using parametric OpenSCAD models, allowing dimensions to be modified easily.
 
-## Pin map (Mega 2560)
+## Running the Game
 
-Wiring style: **LED common pins and button second legs all go to GND.**
-So LED channels are driven HIGH-on, and buttons use `INPUT_PULLUP` (pressed = LOW).
+To run the game, open `ColorMatchGame/ColorMatchGame.ino` in the Arduino IDE, select the Arduino Mega or Mega 2560 board, upload the sketch, and open the Serial Monitor at 9600 baud. The firmware includes testing tools that can be accessed through Serial commands, including `t` for RGB LED testing and `c` for button calibration. During startup, the system checks for common wiring issues such as stuck buttons and incorrect LED connections.
 
-| Pin | Function | | Pin | Function |
-|---|---|---|---|---|
-| 2 | Light 3 — R | | 22 | Light 1 — R |
-| 3 | Light 3 — G | | 23 | Light 1 — G |
-| 4 | Light 3 — B | | 24 | Light 1 — B |
-| 5 | Light 4 — R | | 25 | Light 2 — R |
-| 6 | Light 4 — G | | 26 | Light 2 — G |
-| 7 | Light 4 — B | | 27 | Light 2 — B |
-| 8 | Light 5 — R | | 28 | Button 1 |
-| 9 | Light 5 — G | | 29 | Button 2 |
-| 10 | Light 5 — B | | 30 | Button 3 |
-| 11 | Light 6 — R | | 31 | Button 4 |
-| 12 | Light 6 — G | | 32 | Button 5 |
-| 13 | Light 6 — B | | 33 | Button 6 |
-| | | | 34 | Speaker (+) |
+## Mechanical Design
 
-The authoritative pin tables live at the top of `ColorMatchGame/ColorMatchGame.ino`
-(`RGB_PINS`, `BUTTON_PINS`, `SPEAKER_PIN`) — if you rewire, change them there.
+Each duck uses a servo-powered rack-and-pinion lift mechanism. A servo rotates a gear, which moves a rack vertically and raises the duck above the wall. The design includes approximately 120mm of vertical travel, 180° servo movement, six identical lift modules, 3D printed ducks, and laser-cut housing panels.
 
-Notes:
+## Development Roadmap
 
-- Every LED channel needs its ~220 Ω resistor. Until they're all in, drop `BRIGHTNESS`
-  in the sketch to ~8 so total current can't brown-out the board.
-- Pin 13 (Light 6 — B) shares the Mega's onboard LED — the tiny board LED blinking with
-  it is normal.
-- The sketch expects each light's wires in R, G, B order per `RGB_PINS`; the built-in
-  `t` test and `c` calibration commands find swapped wires/buttons for you.
+Completed features include the RGB button color matching system, reaction game logic, sound effects, servo-controlled duck movement, rack-and-pinion CAD design, high score storage, HUB75 display support, and Mega-to-Pico UART communication.
 
-## Power
+## Project Goal
 
-One duck moves at a time, but budget for spikes. **Never power servos or the matrix from
-the Mega's 5 V pin** — it can only source a few hundred mA.
-
-| Load | Budget | Feed from |
-|---|---|---|
-| Mega 2560 | ~0.2 A | USB (dev) or 7–12 V barrel jack (demo) |
-| 6× SG90/MG90S | 2 A (each can spike ~0.65 A at stall) | Dedicated 5 V rail |
-| HUB75 64×32 | 2–3 A worst case (full white) | Dedicated 5 V rail |
-| LEDs + logic | ~0.3 A | Mega |
-
-**Recommended:** one **5 V 10 A** supply feeding a small distribution block → servo rail +
-matrix rail (Pico 2 can take 5 V on VSYS). Or two supplies: 5 V/3 A for servos, 5 V/4 A
-for the matrix. Either way:
-
-- **All grounds common** — servo rail GND, matrix GND, and Mega GND tied together.
-- Put a **470–1000 µF electrolytic** across the servo rail near the servos; servo start-up
-  spikes otherwise reset microcontrollers.
-- Signal wires (servo PWM, HUB75 data, UART) carry no power — only these plus ground go
-  to the boards.
-
-## Build & upload
-
-**Arduino IDE:** open `ColorMatchGame/ColorMatchGame.ino`, board = *Arduino Mega or Mega
-2560*, upload. Serial Monitor at **9600 baud**.
-
-**CLI** (arduino-cli, also bundled inside Arduino IDE 2.x):
-
-```
-arduino-cli compile --fqbn arduino:avr:mega ColorMatchGame
-arduino-cli upload  --fqbn arduino:avr:mega -p COM3 ColorMatchGame   # your COM port
-```
-
-### What you should see/hear
-
-1. Serial Monitor prints the banner.
-2. If any button reads stuck-pressed, its LED lights red and a cross-short scan tells you
-   exactly which wires are touching. After 10 s the game starts without the bad buttons.
-3. Each round: all six lights show different colors, Serial prints
-   `Find and press: PURPLE  (8.0 s)`. The last 3 seconds tick audibly.
-4. Serial commands: `c` = re-map button order interactively, `t` = LED channel test.
-
-## CAD & fabrication
-
-Everything mechanical is parametric OpenSCAD in [`cad/`](cad/README.md):
-3D-printed ducks (~150 mm), rack-and-pinion lift (~120 mm travel per 180° servo sweep),
-six identical servo lift modules, and laser-cut housing panels (DXF export).
-Dimensions, gear module, travel, and material thickness are all knobs in `cad/params.scad`.
-
-## Roadmap
-
-- [x] Buttons + RGB color-match game with round timer and sound (playable via Serial)
-- [x] CAD: duck, rack & pinion, lift module, housing panels
-- [x] Servo control on the Mega (Servo lib uses Timer5 — reserved, nothing to free up)
-- [x] Full duck-hunt logic: duck pops up, its color is the target (replaces Serial prompt)
-- [x] Pico 2 + HUB75 marquee (score/timer/animations), UART protocol Mega → Pico
-- [x] High-score persistence (Mega EEPROM)
-
+The goal of Duck Hunt Reaction Arcade was to create an arcade experience that requires no explanation. A spectator should immediately understand that a duck appears, a button lights up, the correct button must be pressed, and the score increases. The project combines mechanical engineering, electronics, embedded programming, and game design into a single interactive installation built for OpenSauce 2026.
 ## Pictures
 <img width="3024" height="3024" alt="IMG_8560" src="https://github.com/user-attachments/assets/a1f3dd56-f906-4985-8864-4094a30a135f" />
 <img width="3024" height="4032" alt="IMG_8562" src="https://github.com/user-attachments/assets/51169030-0185-404a-ae03-f9743e1fcf3f" />
