@@ -172,3 +172,8 @@ Dimensions, gear module, travel, and material thickness are all knobs in `cad/pa
 
 ## Pictures
 <img width="3024" height="3024" alt="IMG_8560" src="https://github.com/user-attachments/assets/a1f3dd56-f906-4985-8864-4094a30a135f" />
+<img width="3024" height="4032" alt="IMG_8562" src="https://github.com/user-attachments/assets/51169030-0185-404a-ae03-f9743e1fcf3f" />
+<img width="3024" height="4032" alt="IMG_8565" src="https://github.com/user-attachments/assets/e07b2a31-da50-45e2-a050-8f1881bb390f" />
+<img width="3024" height="4032" alt="IMG_8564" src="https://github.com/user-attachments/assets/190b87f1-5b0f-4bc2-9918-0c6a42ec60d2" />
+<img width="3024" height="4032" alt="IMG_8563" src="https://github.com/user-attachments/assets/107aa109-ab1b-4236-9435-2b1e92b25231" />
+
