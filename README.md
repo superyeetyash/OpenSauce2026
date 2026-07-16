@@ -146,7 +146,7 @@ arduino-cli upload  --fqbn arduino:avr:mega -p COM3 ColorMatchGame   # your COM 
 
 ### What you should see/hear
 
-1. Startup jingle; Serial Monitor prints the banner.
+1. Serial Monitor prints the banner.
 2. If any button reads stuck-pressed, its LED lights red and a cross-short scan tells you
    exactly which wires are touching. After 10 s the game starts without the bad buttons.
 3. Each round: all six lights show different colors, Serial prints
@@ -169,3 +169,6 @@ Dimensions, gear module, travel, and material thickness are all knobs in `cad/pa
 - [ ] Pico 2 + HUB75 marquee (score/timer/animations), UART protocol Mega → Pico
 - [ ] High-score persistence (Mega EEPROM)
 - [ ] Wire speaker → real arcade sounds are already stubbed in
+
+## Pictures
+<img width="3024" height="3024" alt="IMG_8560" src="https://github.com/user-attachments/assets/a1f3dd56-f906-4985-8864-4094a30a135f" />
