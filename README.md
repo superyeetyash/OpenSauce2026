@@ -164,11 +164,10 @@ Dimensions, gear module, travel, and material thickness are all knobs in `cad/pa
 
 - [x] Buttons + RGB color-match game with round timer and sound (playable via Serial)
 - [x] CAD: duck, rack & pinion, lift module, housing panels
-- [ ] Servo control on the Mega (Servo lib uses Timer5 — reserved, nothing to free up)
-- [ ] Full duck-hunt logic: duck pops up, its color is the target (replaces Serial prompt)
-- [ ] Pico 2 + HUB75 marquee (score/timer/animations), UART protocol Mega → Pico
-- [ ] High-score persistence (Mega EEPROM)
-- [ ] Wire speaker → real arcade sounds are already stubbed in
+- [x] Servo control on the Mega (Servo lib uses Timer5 — reserved, nothing to free up)
+- [x] Full duck-hunt logic: duck pops up, its color is the target (replaces Serial prompt)
+- [x] Pico 2 + HUB75 marquee (score/timer/animations), UART protocol Mega → Pico
+- [x] High-score persistence (Mega EEPROM)
 
 ## Pictures
 <img width="3024" height="3024" alt="IMG_8560" src="https://github.com/user-attachments/assets/a1f3dd56-f906-4985-8864-4094a30a135f" />
